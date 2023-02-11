@@ -4,24 +4,29 @@
 
 #include "queue.h"
 
-struct node{
-  int value;
-  struct nodes* next;
-};
-
 struct queue {
 	/* TODO Phase 1 */
-  int head;
-  int end;
-  struct nodes* queuelist;
+	int size;
+	node* head;
+	node* end;
 };
+
+struct node {
+	void *data
+	struct node* next;
+}
 
 queue_t queue_create(void)
 {
 	/* TODO Phase 1 */
-  queue_t temp;
-  temp->queuelist = (struct node*) malloc (sizeof(struct node));
-  return temp;
+	queue_t queue = (queue_t)malloc(sizeof(struct queue));
+	if (queue == NULL || queue) {
+		return NULL;
+	}
+	queue->size = 0;
+	queue->head = NULL;
+	queue->end = NULL;
+	return queue;
 }
 
 int queue_destroy(queue_t queue)
