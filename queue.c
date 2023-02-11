@@ -12,9 +12,9 @@ struct queue {
 };
 
 struct node {
-	void *data
+	void *data;
 	struct node* next;
-}
+};
 
 queue_t queue_create(void)
 {
@@ -32,6 +32,12 @@ queue_t queue_create(void)
 int queue_destroy(queue_t queue)
 {
 	/* TODO Phase 1 */
+	if (queue == NULL || queue->size != 0) {
+		return -1;
+	}
+
+	free(queue);
+	return 0;
 }
 
 int queue_enqueue(queue_t queue, void *data)
