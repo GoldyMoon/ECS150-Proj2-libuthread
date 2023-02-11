@@ -35,7 +35,6 @@ int queue_destroy(queue_t queue)
 	if (queue == NULL || queue->size != 0) {
 		return -1;
 	}
-
 	free(queue);
 	return 0;
 }
@@ -66,6 +65,13 @@ int queue_enqueue(queue_t queue, void *data)
 int queue_dequeue(queue_t queue, void **data)
 {
 	/* TODO Phase 1 */
+	queue->size--;
+	*data = queue->head->data;
+	queue->head = queue->head->next;
+	if (queue->size == 0) {
+		queue->tail = NULL;
+	}
+	return 0;
 }
 
 int queue_delete(queue_t queue, void *data)
