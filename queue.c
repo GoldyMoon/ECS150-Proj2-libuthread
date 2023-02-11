@@ -20,7 +20,7 @@ queue_t queue_create(void)
 {
 	/* TODO Phase 1 */
 	queue_t queue = (queue_t)malloc(sizeof(struct queue));
-	if (queue == NULL || queue) {
+	if (queue == NULL) {
 		return NULL;
 	}
 	queue->size = 0;
