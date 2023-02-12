@@ -118,6 +118,9 @@ int queue_iterate(queue_t queue, queue_func_t func)
 		return -1;
 	}
 	while (true) {
+		if (temp == NULL) {
+			break;
+		}
 		next = temp->next;
 		func(queue, temp->data);
 		temp = next;
