@@ -65,12 +65,14 @@ int queue_enqueue(queue_t queue, void *data)
 int queue_dequeue(queue_t queue, void **data)
 {
 	/* TODO Phase 1 */
+	struct node* temp = queue->head;
 	queue->size--;
 	*data = queue->head->data;
 	queue->head = queue->head->next;
 	if (queue->size == 0) {
 		queue->tail = NULL;
 	}
+	free(temp);
 	return 0;
 }
 
