@@ -5,7 +5,6 @@
 #include "queue.h"
 
 struct queue {
-	/* TODO Phase 1 */
 	int size;
 	node* head;
 	node* tail;
@@ -18,7 +17,6 @@ struct node {
 
 queue_t queue_create(void)
 {
-	/* TODO Phase 1 */
 	queue_t queue = (queue_t)malloc(sizeof(struct queue));
 	if (queue == NULL) {
 		return NULL;
@@ -31,7 +29,6 @@ queue_t queue_create(void)
 
 int queue_destroy(queue_t queue)
 {
-	/* TODO Phase 1 */
 	if (queue == NULL || queue->size != 0) {
 		return -1;
 	}
@@ -41,7 +38,6 @@ int queue_destroy(queue_t queue)
 
 int queue_enqueue(queue_t queue, void *data)
 {
-	/* TODO Phase 1 */
 	if (data == NULL || queue == NULL) {
 		return -1;
 	}
@@ -64,7 +60,9 @@ int queue_enqueue(queue_t queue, void *data)
 
 int queue_dequeue(queue_t queue, void **data)
 {
-	/* TODO Phase 1 */
+	if (queue == NULL || data == NULL || queue->size == 0) {
+		return -1;
+	}
 	struct node* temp = queue->head;
 	queue->size--;
 	*data = queue->head->data;
@@ -78,7 +76,35 @@ int queue_dequeue(queue_t queue, void **data)
 
 int queue_delete(queue_t queue, void *data)
 {
-	/* TODO Phase 1 */
+	if (queue == NULL || data == NULL) {
+		return -1;
+	}
+	struct node* head = queue->head;
+	struct node* tail = queue->tail;
+	//  if the first element match or there's only 1 node
+	if (head->data == data || queue->size == 1) {
+		queue_dequeue(queue, &data);
+		return 0;
+	}
+	struct node* temp = head;
+	while (temp->data != data) {
+		if (temp->next->data == data) {
+			struct node* match = temp->next;
+			temp->next = match->next;
+			if (temp->next == tail) {
+				queue->tail = temp;
+			}
+			free(match);
+			queue->size--;
+		} else {
+			temp = temp->next;
+		}
+	}
+	//  Not found
+	if (temp == NULL) {
+		return -1;
+	}
+	return 0;
 }
 
 int queue_iterate(queue_t queue, queue_func_t func)
@@ -89,5 +115,6 @@ int queue_iterate(queue_t queue, queue_func_t func)
 int queue_length(queue_t queue)
 {
 	/* TODO Phase 1 */
+	return queue->size;
 }
 
