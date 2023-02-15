@@ -44,18 +44,12 @@ void uthread_yield(void)
 	current_thread = uthread_current();
 	queue_enqueue(readyqueue, current_thread);
 	struct uthread_tcb *next = malloc(sizeof(struct uthread_tcb));
-	struct uthread_tcb *prev = malloc(sizeof(struct uthread_tcb));
-	printf("entern 5\n");
+	//struct uthread_tcb *prev = malloc(sizeof(struct uthread_tcb));
 	queue_dequeue(readyqueue, (void**)&next);
-	printf("enter p 6\n");
-	prev = current_thread;
+	//prev = current_thread;
 	current_thread = next;
-	printf("enter p 7\n");
 	current_thread->state = 0;
-	printf("enter p 8\n");
-	uthread_ctx_switch(prev->context,next->context);
-	printf("extern p 9\n");
-	
+	uthread_ctx_switch(current_thread->context,next->context);
 }
 
 void uthread_exit(void)
@@ -88,7 +82,6 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 
 	readyqueue = queue_create();
 	//current_thread = &main_thread;
-	printf("enter point1\n");
 	if(preempt) {
 		printf("testing: preemptive scheduling is enabled.\n");
 	}
@@ -101,13 +94,10 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 	uthread_create(func, arg);
 
 	while(1) {
-		printf("enter point2\n");
 		if(!queue_length(readyqueue)) {
 			break;
 		}
-		printf("enter point3\n");
 		uthread_yield();
-		printf("enter point4\n");
 	}
 	//queue_destroy(readyqueue);
 	return 0;
