@@ -65,16 +65,15 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 {
 	readyqueue = queue_create();
 	current_thread = &main_thread;
-
+	//  main thread initialization?
+	
 	uthread_create(func, arg);
 
 	while(1) {
-		
 		if(queue_length(readyqueue)) {
 			break;
 		}
-		
-	uthread_yield();
+		uthread_yield();
 	}
 }
 
