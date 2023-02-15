@@ -1,18 +1,19 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "queue.h"
-
-struct queue {
-	int size;
-	node* head;
-	node* tail;
-};
 
 struct node {
 	void *data;
 	struct node* next;
+};
+
+struct queue {
+	int size;
+	struct node *head;
+	struct node *tail;
 };
 
 queue_t queue_create(void)
@@ -60,10 +61,10 @@ int queue_enqueue(queue_t queue, void *data)
 
 int queue_dequeue(queue_t queue, void **data)
 {
-	struct node* temp = queue->head;
 	if (queue == NULL || data == NULL || queue->size == 0) {
 		return -1;
 	}
+	struct node* temp = queue->head;
 	queue->size--;
 	*data = queue->head->data;
 	queue->head = queue->head->next;
@@ -132,4 +133,3 @@ int queue_length(queue_t queue)
 {
 	return queue->size;
 }
-
