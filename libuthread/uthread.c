@@ -19,8 +19,8 @@ struct uthread_tcb {
 
 queue_t readyqueue;
 struct uthread_tcb *current_thread;
-struct uthread_tcb *next_thread;
-struct uthread_tcb main_thread;
+//struct uthread_tcb *next_thread;
+//struct uthread_tcb main_thread;
 
 struct uthread_tcb *uthread_current(void)
 {
@@ -29,12 +29,33 @@ struct uthread_tcb *uthread_current(void)
 
 void uthread_yield(void)
 {
-	struct uthread_tcb *temp = uthread_current();
+	/*
+	current_thread = uthread_current();
+  queue_enqueue(readyqueue, current_thread); 
+  struct uthread_tcb *prev_thread;
+  struct uthread_tcb *next_thread;
+  queue_dequeue(readyqueue, (void**)&next_thread); 
+  prev_thread = current_thread;
+  current_thread = next_thread;
+  uthread_ctx_switch(prev_thread->context, next_thread->context);
+	*/
+
+	
+	current_thread = uthread_current();
+	queue_enqueue(readyqueue, current_thread);
 	struct uthread_tcb *next = malloc(sizeof(struct uthread_tcb));
+	struct uthread_tcb *prev = malloc(sizeof(struct uthread_tcb));
+	printf("entern 5\n");
 	queue_dequeue(readyqueue, (void**)&next);
-	queue_enqueue(readyqueue, temp);
-	temp->state = 0;
-	uthread_ctx_switch(temp->context,next->context);
+	printf("enter p 6\n");
+	prev = current_thread;
+	current_thread = next;
+	printf("enter p 7\n");
+	current_thread->state = 0;
+	printf("enter p 8\n");
+	uthread_ctx_switch(prev->context,next->context);
+	printf("extern p 9\n");
+	
 }
 
 void uthread_exit(void)
@@ -63,21 +84,32 @@ int uthread_create(uthread_func_t func, void *arg)
 
 int uthread_run(bool preempt, uthread_func_t func, void *arg)
 {
+
+
 	readyqueue = queue_create();
-	current_thread = &main_thread;
-	//  main thread initialization?
-	
-	uthread_create(func, arg);
+	//current_thread = &main_thread;
+	printf("enter point1\n");
 	if(preempt) {
-		
+		printf("testing: preemptive scheduling is enabled.\n");
 	}
+	//  main thread initialization?
+	struct uthread_tcb* main_thread = (struct uthread_tcb*)malloc(sizeof(struct uthread_tcb));
+  main_thread->context = (uthread_ctx_t*)malloc(sizeof(uthread_ctx_t));
+  main_thread->sp = uthread_ctx_alloc_stack();
+	current_thread = main_thread;
+
+	uthread_create(func, arg);
 
 	while(1) {
-		if(queue_length(readyqueue)) {
+		printf("enter point2\n");
+		if(!queue_length(readyqueue)) {
 			break;
 		}
+		printf("enter point3\n");
 		uthread_yield();
+		printf("enter point4\n");
 	}
+	//queue_destroy(readyqueue);
 	return 0;
 }
 
