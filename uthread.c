@@ -36,7 +36,7 @@ void uthread_yield(void)
 
 void uthread_exit(void)
 {	
-	uthread_ctx_switch();
+	uthread_ctx_switch(current_thread,queue_dequeue(readyqueue,next_thread));
 	/* TODO Phase 2 */
 }
 
@@ -53,10 +53,10 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 {
 	/* TODO Phase 2 */
 
-	//ready_queue = queue_create();
+	readyqueue = queue_create();
 	current_thread = &main_thread;
 
-	// uthread_create(func);
+	uthread_create(func, arg);
 
 	while(1) {
 		
