@@ -30,20 +30,20 @@ struct uthread_tcb *uthread_current(void)
 void uthread_yield(void)
 {
 	struct uthread_tcb *temp = uthread_current();
-	struct uthread_tcb *next;
-	queue_dequeue(readyqueue, next);
+	struct uthread_tcb *next = malloc(sizeof(struct uthread_tcb));
+	queue_dequeue(readyqueue, (void**)&next);
 	queue_enqueue(readyqueue, temp);
 	temp->state = 0;
-	uthread_ctx_switch(temp->context,next->cotext);
+	uthread_ctx_switch(temp->context,next->context);
 }
 
 void uthread_exit(void)
 {	
 	struct uthread_tcb *temp = uthread_current();
-	struct uthread_tcb *next;
-	queue_dequeue(readyqueue, next);
+	struct uthread_tcb *next = malloc(sizeof(struct uthread_tcb));
+	queue_dequeue(readyqueue, (void**)&next);
 	temp->state = 0;
-	uthread_ctx_switch(temp->context,next->cotext);
+	uthread_ctx_switch(temp->context,next->context);
 	uthread_ctx_destroy_stack(temp->sp);
 	free(temp);
 }
@@ -68,6 +68,9 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 	//  main thread initialization?
 	
 	uthread_create(func, arg);
+	if(preempt) {
+		
+	}
 
 	while(1) {
 		if(queue_length(readyqueue)) {
@@ -75,6 +78,7 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 		}
 		uthread_yield();
 	}
+	return 0;
 }
 
 void uthread_block(void)
