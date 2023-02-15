@@ -1,4 +1,3 @@
-# Target library
 lib := libuthread.a
 CFLAGS = -g
 CFLAGS += -Wall -Werror -Wextra
@@ -6,14 +5,20 @@ CC = gcc
 
 all: $(lib)
 
-$(lib):	queue.o
-	ar rcs $(lib) queue.o
+$(lib):	queue.o uthread.o context.o
+	ar rcs $(lib) queue.o uthread.o context.o
+
+context.o: context.c
+	$(CC) $(CFLAGS) -c -o context.o context.c
+
+uthread.o: uthread.c
+	$(CC) $(CFLAGS) -c -o uthread.o uthread.c
 
 queue.o: queue.c
 	$(CC) $(CFLAGS) -c -o queue.o queue.c
 
 clean:
-	rm -f queue
+	rm -f queue.o uthread.o context.o
 
 
 ## TODO: Phase 1

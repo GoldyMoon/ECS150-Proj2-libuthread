@@ -53,10 +53,10 @@ int uthread_create(uthread_func_t func, void *arg)
 	struct uthread_tcb *temp_tcb = malloc(sizeof(struct uthread_tcb));
 	uthread_ctx_t *new_context = malloc(sizeof(uthread_ctx_t));
 	void* sp = uthread_ctx_alloc_stack();
-	uthread_ctx_init(new_context,sp,func,arg);
 	temp_tcb->state = 1;
 	temp_tcb->sp = sp;
 	temp_tcb->context = new_context;
+	uthread_ctx_init(new_context,sp,func,arg);
 	queue_enqueue(readyqueue, temp_tcb);
 	return 0;
 }
