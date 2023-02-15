@@ -44,12 +44,12 @@ void uthread_yield(void)
 	current_thread = uthread_current();
 	queue_enqueue(readyqueue, current_thread);
 	struct uthread_tcb *next = malloc(sizeof(struct uthread_tcb));
-	//struct uthread_tcb *prev = malloc(sizeof(struct uthread_tcb));
+	struct uthread_tcb *prev = malloc(sizeof(struct uthread_tcb));
 	queue_dequeue(readyqueue, (void**)&next);
-	//prev = current_thread;
+	prev = current_thread;
 	current_thread = next;
 	current_thread->state = 0;
-	uthread_ctx_switch(current_thread->context,next->context);
+	uthread_ctx_switch(prev->context,next->context);
 }
 
 void uthread_exit(void)
