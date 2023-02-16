@@ -133,11 +133,11 @@ void uthread_block(void)
 	//struct uthread_tcb *temp = uthread_current();
 	current_thread->state = 2;	//block state
 	struct uthread_tcb *prev;
-  struct uthread_tcb *next;
-  queue_dequeue(readyqueue, (void**)&next); // 
-  prev = current_thread;
-  current_thread = next;
-  uthread_ctx_switch(prev -> context,next -> context);
+  	struct uthread_tcb *next;
+  	queue_dequeue(readyqueue, (void**)&next); // 
+  	prev = current_thread;
+  	current_thread = next;
+  	uthread_ctx_switch(prev -> context,next -> context);
 	//switch between the fisrt available and the current block thread and put the prev thread(blocked) into the waiting queue in sem.c
 }
 
