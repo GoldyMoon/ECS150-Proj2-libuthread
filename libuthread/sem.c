@@ -49,7 +49,6 @@ int sem_up(sem_t sem)	//Lack error handler
         struct uthread_tcb *next_thread;
         queue_dequeue(sem->waiting_queue, (void**)&next_thread);
         uthread_unblock(next_thread);
-				sem -> count ++;
     }
 
 
