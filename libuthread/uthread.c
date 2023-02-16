@@ -19,7 +19,7 @@ struct uthread_tcb {
 queue_t readyqueue;
 struct uthread_tcb *current_thread;
 //struct uthread_tcb *next_thread;
-struct uthread_tcb main_thread;
+struct uthread_tcb *main_thread;
 
 struct uthread_tcb *uthread_current(void)
 {
