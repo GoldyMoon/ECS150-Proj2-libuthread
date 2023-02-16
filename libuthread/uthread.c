@@ -19,7 +19,7 @@ struct uthread_tcb {
 queue_t readyqueue;
 struct uthread_tcb *current_thread;
 //struct uthread_tcb *next_thread;
-//struct uthread_tcb main_thread;
+struct uthread_tcb main_thread;
 
 struct uthread_tcb *uthread_current(void)
 {
@@ -89,7 +89,7 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 		printf("testing: preemptive scheduling is enabled.\n");
 	}
 	//  main thread initialization?
-	struct uthread_tcb* main_thread = (struct uthread_tcb*)malloc(sizeof(struct uthread_tcb));
+	main_thread = (struct uthread_tcb*)malloc(sizeof(struct uthread_tcb));
 	main_thread->context = (uthread_ctx_t*)malloc(sizeof(uthread_ctx_t));
 	main_thread->sp = uthread_ctx_alloc_stack();
 	if (main_thread == NULL || main_thread->context == NULL) {
@@ -116,6 +116,7 @@ void uthread_block(void)
 	struct uthread_tcb *temp = uthread_current();
 	temp->state = 2;
 	// switch??
+	uthread_ctx_switch(temp->context,main_thread->context);
 }
 
 void uthread_unblock(struct uthread_tcb *uthread)
