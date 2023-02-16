@@ -21,40 +21,26 @@ sem_t sem_create(size_t count)
 	return temp;
 }
 
-int sem_destroy(sem_t sem)
+int sem_destroy(sem_t sem)	// Lack error handler 
 {
 	queue_destroy(sem->waiting_queue);
 	free(sem);
 	return 0;
 }
 
-int sem_down(sem_t sem)
+int sem_down(sem_t sem)	//Lack error handler
 {
 
 	if (sem->count > 0) {
-    sem->count -= 1;
+    sem->count --;
   }else {
     queue_enqueue(sem->waiting_queue, uthread_current());
     uthread_block();
   }
-
-	/*
-	
-	if (sem == NULL) {
-		return -1;
-	}
-	struct uthread_tcb *temp = uthread_current();
-	sem -> count--;
-	if (sem -> count <= 0){
-		queue_enqueue(sem->waiting_queue, temp);
-		uthread_block();
-		//sem -> count ++;
-	}
-	*/
 	return 0;
 }
 
-int sem_up(sem_t sem)
+int sem_up(sem_t sem)	//Lack error handler
 {
 	if (queue_length(sem->waiting_queue) == 0) {
         // nothing in the wl
@@ -63,6 +49,7 @@ int sem_up(sem_t sem)
         struct uthread_tcb *next_thread;
         queue_dequeue(sem->waiting_queue, (void**)&next_thread);
         uthread_unblock(next_thread);
+				sem -> count ++;
     }
 
 
