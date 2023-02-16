@@ -22,6 +22,3 @@ queue.o: queue.c
 
 clean:
 	rm -f queue.o uthread.o context.o
-
-
-## TODO: Phase 1
