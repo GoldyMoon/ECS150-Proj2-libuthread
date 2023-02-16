@@ -30,6 +30,13 @@ int sem_destroy(sem_t sem)
 
 int sem_down(sem_t sem)
 {
+	   if (sem->count > 0) {
+        sem->count -= 1;
+    } else {
+        queue_enqueue(sem->waiting_queue, uthread_current());
+        uthread_block();
+    }
+	/*
 	if (sem == NULL) {
 		return -1;
 	}
@@ -40,6 +47,7 @@ int sem_down(sem_t sem)
 		uthread_block();
 		sem -> count ++;
 	}
+	*/
 	return 0;
 }
 
