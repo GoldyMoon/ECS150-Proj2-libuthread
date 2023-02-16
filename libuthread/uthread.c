@@ -12,7 +12,7 @@
 
 struct uthread_tcb {
 	void *sp;	//  stack pointer
-	int state;	//  running(0), ready(1) ,block(2), unblock(3), or exited(4)
+	int state;	//  running(0), ready(1) ,block(2), or exited(3)
 	uthread_ctx_t *context;//  set of registers
 };
 
@@ -40,7 +40,8 @@ void uthread_yield(void)
 	*/
 
 	
-	current_thread = uthread_current();
+	//current_thread = uthread_current();
+
 	queue_enqueue(readyqueue, current_thread);
 	struct uthread_tcb *next = malloc(sizeof(struct uthread_tcb));
 	struct uthread_tcb *prev = malloc(sizeof(struct uthread_tcb));
@@ -53,7 +54,8 @@ void uthread_yield(void)
 
 void uthread_exit(void)
 {	
-	current_thread = uthread_current();
+	//current_thread = uthread_current();
+
 	struct uthread_tcb *next = malloc(sizeof(struct uthread_tcb));
 	struct uthread_tcb *prev = malloc(sizeof(struct uthread_tcb));
 	queue_dequeue(readyqueue, (void**)&next);
@@ -128,12 +130,21 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 
 void uthread_block(void)
 {
-	struct uthread_tcb *temp = uthread_current();
-	temp->state = 2;
+	//struct uthread_tcb *temp = uthread_current();
+	current_thread->state = 2;	//block state
+	struct uthread_tcb *prev;
+  struct uthread_tcb *next;
+  queue_dequeue(readyqueue, (void**)&next); // dequeue ready queue to get the head
+  prev = current_thread;
+  current_thread = next;
+  uthread_ctx_switch(prev -> context,next -> context);
+	//switch between the fisrt available and the current block thread and put the prev thread(blocked) into the waiting queue
 	// switch??
 }
 
 void uthread_unblock(struct uthread_tcb *uthread)
 {
-	uthread->state = 3;
+	//
+	uthread->state = 1; //ready state
+	queue_enqueue(readyqueue,uthread);
 }

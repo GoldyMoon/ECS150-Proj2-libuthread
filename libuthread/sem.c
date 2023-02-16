@@ -30,13 +30,7 @@ int sem_destroy(sem_t sem)
 
 int sem_down(sem_t sem)
 {
-	   if (sem->count > 0) {
-        sem->count -= 1;
-    } else {
-        queue_enqueue(sem->waiting_queue, uthread_current());
-        uthread_block();
-    }
-	/*
+	
 	if (sem == NULL) {
 		return -1;
 	}
@@ -47,7 +41,7 @@ int sem_down(sem_t sem)
 		uthread_block();
 		sem -> count ++;
 	}
-	*/
+	
 	return 0;
 }
 
@@ -55,7 +49,7 @@ int sem_up(sem_t sem)
 {
 	if (queue_length(sem->waiting_queue) == 0) {
         // nothing in the wl
-        sem->count += 1;
+        sem->count ++;
     } else {
         struct uthread_tcb *next_thread;
         queue_dequeue(sem->waiting_queue, (void**)&next_thread);
