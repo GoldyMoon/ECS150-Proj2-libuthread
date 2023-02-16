@@ -39,9 +39,8 @@ int sem_down(sem_t sem)
 	if (sem -> count <= 0){
 		queue_enqueue(sem->waiting_queue, temp);
 		uthread_block();
-		sem -> count ++;
+		//sem -> count ++;
 	}
-	
 	return 0;
 }
 
