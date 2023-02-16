@@ -28,20 +28,6 @@ struct uthread_tcb *uthread_current(void)
 
 void uthread_yield(void)
 {
-	/*
-	current_thread = uthread_current();
-  queue_enqueue(readyqueue, current_thread); 
-  struct uthread_tcb *prev_thread;
-  struct uthread_tcb *next_thread;
-  queue_dequeue(readyqueue, (void**)&next_thread); 
-  prev_thread = current_thread;
-  current_thread = next_thread;
-  uthread_ctx_switch(prev_thread->context, next_thread->context);
-	*/
-
-	
-	//current_thread = uthread_current();
-
 	queue_enqueue(readyqueue, current_thread);
 	struct uthread_tcb *next = malloc(sizeof(struct uthread_tcb));
 	struct uthread_tcb *prev = malloc(sizeof(struct uthread_tcb));
@@ -54,8 +40,6 @@ void uthread_yield(void)
 
 void uthread_exit(void)
 {	
-	//current_thread = uthread_current();
-
 	struct uthread_tcb *next = malloc(sizeof(struct uthread_tcb));
 	struct uthread_tcb *prev = malloc(sizeof(struct uthread_tcb));
 	queue_dequeue(readyqueue, (void**)&next);
@@ -65,18 +49,6 @@ void uthread_exit(void)
 	uthread_ctx_switch(prev->context,next->context);
 	uthread_ctx_destroy_stack(prev->sp);
 	free(prev);
-
-
-
-	/*
-	struct uthread_tcb *temp = uthread_current();
-	struct uthread_tcb *next = malloc(sizeof(struct uthread_tcb));
-	queue_dequeue(readyqueue, (void**)&next);
-	temp->state = 4;
-	uthread_ctx_switch(temp->context,next->context);
-	uthread_ctx_destroy_stack(temp->sp);
-	free(temp);
-	*/
 }
 
 int uthread_create(uthread_func_t func, void *arg)
@@ -99,11 +71,9 @@ int uthread_create(uthread_func_t func, void *arg)
 
 int uthread_run(bool preempt, uthread_func_t func, void *arg)
 {
-
-
 	readyqueue = queue_create();
 	if (preempt) {
-		printf("testing: preemptive scheduling is enabled.\n");
+		printf("testing: preemptive scheduling is enabled.\n");	//start? 
 	}
 	//  main thread initialization?
 	main_thread = (struct uthread_tcb*)malloc(sizeof(struct uthread_tcb));
@@ -113,11 +83,11 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 		return -1;
 	}
 	current_thread = main_thread;
-
-	if (uthread_create(func, arg)) {
+	//disable
+	if (uthread_create(func, arg)) {	//ciritical? no sig
 		return -1;
 	}
-
+	//enable
 	while(1) {
 		if(!queue_length(readyqueue)) {
 			break;
@@ -125,22 +95,26 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 		uthread_yield();
 	}
 	queue_destroy(readyqueue);
+	//disable
+	//stop preemp_stop
 	return 0;
 }
 
+//
 void uthread_block(void)
 {
 	//struct uthread_tcb *temp = uthread_current();
 	current_thread->state = 2;	//block state
 	struct uthread_tcb *prev;
-  	struct uthread_tcb *next;
-  	queue_dequeue(readyqueue, (void**)&next); // 
-  	prev = current_thread;
-  	current_thread = next;
-  	uthread_ctx_switch(prev -> context,next -> context);
+  struct uthread_tcb *next;
+  queue_dequeue(readyqueue, (void**)&next); // 
+  prev = current_thread;
+  current_thread = next;
+  uthread_ctx_switch(prev -> context,next -> context);
 	//switch between the fisrt available and the current block thread and put the prev thread(blocked) into the waiting queue in sem.c
 }
 
+//
 void uthread_unblock(struct uthread_tcb *uthread)
 {
 	//
