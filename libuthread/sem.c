@@ -48,7 +48,6 @@ int sem_up(sem_t sem)
 	if (sem == NULL) {
 		return -1;
 	}
-	struct uthread_tcb *temp = uthread_current();
 	struct uthread_tcb *next;
 	sem->count++;
 	if (queue_length(sem->waiting_queue) != 0) {
