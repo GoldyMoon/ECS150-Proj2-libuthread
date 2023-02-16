@@ -32,10 +32,10 @@ int sem_down(sem_t sem)	//Lack error handler
 {
 
 	if (sem->count > 0) {
-    	sem->count --;
+    		sem->count --;
   	} else {
-    	queue_enqueue(sem->waiting_queue, uthread_current());
-    	uthread_block();
+    		queue_enqueue(sem->waiting_queue, uthread_current());
+    		uthread_block();
   	}
 	return 0;
 }
@@ -47,14 +47,12 @@ int sem_up(sem_t sem)	//Lack error handler
 	}
 	if (queue_length(sem->waiting_queue) == 0) {
         // nothing in the wl
-        sem->count ++;
-    } else {
-        struct uthread_tcb *next_thread;
-        queue_dequeue(sem->waiting_queue, (void**)&next_thread);
-        uthread_unblock(next_thread);
-    }
-
-
+        	sem->count ++;
+    	} else {
+        	struct uthread_tcb *next_thread;
+        	queue_dequeue(sem->waiting_queue, (void**)&next_thread);
+        	uthread_unblock(next_thread);
+    	}
 	/*
 	if (sem == NULL) {
 		return -1;
