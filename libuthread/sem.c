@@ -25,6 +25,7 @@ int sem_destroy(sem_t sem)
 {
 	queue_destroy(sem->waiting_queue);
 	free(sem);
+	return 0;
 }
 
 int sem_down(sem_t sem)
