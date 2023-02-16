@@ -49,11 +49,11 @@ int sem_up(sem_t sem)
 		return -1;
 	}
 	struct uthread_tcb *temp = uthread_current();
+	struct uthread_tcb *next;
+	sem->count++;
 	if (queue_length(sem->waiting_queue) != 0) {
-		queue_dequeue(sem->waiting_queue, (void**)&temp);
-		uthread_unblock(temp);
-	} else {
-		sem->count++;
+		queue_dequeue(sem->waiting_queue, (void**)&next);
+		uthread_unblock(next);
 	}
 	return 0;
 }
