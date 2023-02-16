@@ -116,7 +116,6 @@ void uthread_block(void)
 	struct uthread_tcb *temp = uthread_current();
 	temp->state = 2;
 	// switch??
-	uthread_ctx_switch(temp->context,main_thread->context);
 }
 
 void uthread_unblock(struct uthread_tcb *uthread)
