@@ -34,22 +34,40 @@ int sem_down(sem_t sem)
 		return -1;
 	}
 	struct uthread_tcb *temp = uthread_current();
-	queue_enqueue(sem->waiting_queue, temp);
-	uthread_block();
-	sem->count--;
+	sem -> count--;
+	if (sem -> count <= 0){
+		queue_enqueue(sem->waiting_queue, temp);
+		uthread_block();
+		sem -> count ++;
+	}
 	return 0;
 }
 
 int sem_up(sem_t sem)
 {
+	if (queue_length(sem->waiting_queue) == 0) {
+        // nothing in the wl
+        sem->count += 1;
+    } else {
+        struct uthread_tcb *next_thread;
+        queue_dequeue(sem->waiting_queue, (void**)&next_thread);
+        uthread_unblock(next_thread);
+    }
+
+
+	/*
 	if (sem == NULL) {
 		return -1;
 	}
 	struct uthread_tcb *temp = uthread_current();
+
+
+	
 	sem->count++;
 	if (queue_length(sem->waiting_queue) != 0) {
 		queue_dequeue(sem->waiting_queue, (void**)&temp);
 		uthread_unblock(temp);
-	}
+	}*/
+
 	return 0;
 }
