@@ -49,7 +49,7 @@ void preempt_start(bool preempt)
 	it_val.it_value.tv.usec = 1;
 	it_val.it_interval.tv_sec = 0;
 	it_val.it_interval.tv_usec = micro_seconds;
-	if (setitimer(ITIMER_REAL, &new, &old) < 0) {
+	if (setitimer(ITIMER_VIRTUAL, &new, &old) < 0) {
 		perror("setitimer");
 		exit(1);
 	}
