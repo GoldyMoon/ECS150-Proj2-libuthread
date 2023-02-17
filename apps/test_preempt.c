@@ -3,36 +3,29 @@
 #include <stdlib.h>
 
 #include <uthread.h>
-
-void thread3(void *arg)
-{
-	(void)arg;
-
-	uthread_yield();
-	printf("thread3\n");
-}
+#include <private.h>
 
 void thread2(void *arg)
 {
 	(void)arg;
-
-	uthread_create(thread3, NULL);
-	uthread_yield();
-	printf("thread2\n");
+  while(1){
+    printf("still here t2\n");
+  }
 }
 
 void thread1(void *arg)
 {
 	(void)arg;
-
+  printf("thread1 entered\n");
 	uthread_create(thread2, NULL);
+  printf("thread1 entered\n");
 	uthread_yield();
-	printf("thread1\n");
-	uthread_yield();
+	printf("thread1 reenterd\n");
 }
 
 int main(void)
 {
 	uthread_run(false, thread1, NULL);
+  printf("main thread\n");
 	return 0;
 }
