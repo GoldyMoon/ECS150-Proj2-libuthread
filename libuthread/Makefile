@@ -7,12 +7,12 @@ Q = @
 
 all: $(lib)
 
-$(lib):	queue.o uthread.o context.o sem.o
-	ar rcs $(lib) queue.o uthread.o context.o sem.o
+$(lib):	queue.o uthread.o context.o sem.o preempt.o
+	ar rcs $(lib) queue.o uthread.o context.o sem.o preempt.o
 
 %.o: %.c
 	@echo "CC	$@"
 	$(Q)$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -f queue.o uthread.o context.o sem.o
+	rm -f queue.o uthread.o context.o sem.o preempt.o

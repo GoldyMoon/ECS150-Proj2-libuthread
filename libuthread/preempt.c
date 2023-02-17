@@ -9,28 +9,37 @@
 #include "private.h"
 #include "uthread.h"
 
+#define _XOPEN_SOURCE 700
+
 /*
  * Frequency of preemption
  * 100Hz is 100 times per second
  */
 #define HZ 100
 
-struct sigaction sa;
+struct sigaction sa,normalsa;
 struct itimerval old, new;
 sigset_t ss;
 
-void signal_handler(void) {
-	uthread_yield();
+void signal_handler(int signum) {
+	if(signum == SIGVTALRM){
+		uthread_yield();
+	}
 }
 
 void preempt_disable(void)
 {
-	sigpromask(SIG_BLOCK, &ss, NULL);
+	sigemptyset(&ss);
+	sigaddset(&ss,SIGVTALRM);
+	sigprocmask(SIG_BLOCK, &ss, NULL);
 }
 
 void preempt_enable(void)
 {
-	sigpromask(SIG_UNBLOCK, &ss, NULL);
+	//Add or not?
+	sigemptyset(&ss);
+	sigaddset(&ss,SIGVTALRM);
+	sigprocmask(SIG_UNBLOCK, &ss, NULL);
 }
 
 void preempt_start(bool preempt)
@@ -38,26 +47,43 @@ void preempt_start(bool preempt)
 	if (!preempt) {
 		return;
 	}
-	int micro_seconds = 100000/HZ;
-	sigemptyset(&ss);
-	sigaddset(&ss, SIGVTALRM);
-	sa.sa_handler = signal_handler;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flag = 0;
-	sigaction(SIGVTALRM, &sa, NULL);
-	it_val.it_value.tv_sec = 0;
-	it_val.it_value.tv.usec = 1;
-	it_val.it_interval.tv_sec = 0;
-	it_val.it_interval.tv_usec = micro_seconds;
-	if (setitimer(ITIMER_VIRTUAL, &new, &old) < 0) {
-		perror("setitimer");
-		exit(1);
+	//int micro_seconds = 100000/HZ;
+	else{
+		sa.sa_handler = signal_handler;
+		sigemptyset(&sa.sa_mask);
+		sigaddset(&sa.sa_mask, SIGVTALRM);
+		sa.sa_flags = 0;
+		sigaction(SIGVTALRM,&sa,&normalsa);
+
+
+		new.it_interval.tv_usec = 10000;
+		new.it_interval.tv_sec = 0;
+		new.it_value.tv_usec = 10000;
+		new.it_value.tv_sec = 0;
+	
+		int temp = setitimer(ITIMER_VIRTUAL, &new, &old);
+		if (temp < 0) {
+			perror("setitimer fail");
+			exit(1);
+		}
 	}
 }
 
 void preempt_stop(void)
 {
-	preempt_disable();
-	sigaction(SIGALRM, &sa, NULL);
+	//preempt_disable();
+
+	sigaction(SIGVTALRM, &normalsa, NULL);
+
+
+	new.it_interval.tv_usec = 0;
+	new.it_interval.tv_sec = 0;
+	new.it_value.tv_usec = 0;
+	new.it_value.tv_sec = 0;
+	int temp = setitimer(ITIMER_VIRTUAL, &new, &old);
+	if (temp < 0) {
+		perror("setitimer fail");
+		exit(1);
+	}
 }
 

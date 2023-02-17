@@ -73,9 +73,12 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 {
 	readyqueue = queue_create();
 	if (preempt) {
+		//preempt_enable();
+		preempt_start(preempt);
 		printf("testing: preemptive scheduling is enabled.\n");	//start? 
 	}
 	//  main thread initialization?
+	preempt_disable();
 	main_thread = (struct uthread_tcb*)malloc(sizeof(struct uthread_tcb));
 	main_thread->context = (uthread_ctx_t*)malloc(sizeof(uthread_ctx_t));
 	main_thread->sp = uthread_ctx_alloc_stack();
@@ -96,7 +99,7 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 	}
 	queue_destroy(readyqueue);
 	//disable
-	//stop preemp_stop
+	preempt_stop();
 	return 0;
 }
 
