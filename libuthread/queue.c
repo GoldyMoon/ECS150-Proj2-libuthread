@@ -77,21 +77,30 @@ int queue_dequeue(queue_t queue, void **data)
 
 int queue_delete(queue_t queue, void *data)
 {
+	if (queue == NULL || data == NULL) {
+		return -1;
+	}
 	struct node* head = queue->head;
 	struct node* tail = queue->tail;
 	struct node* temp = head;
 	struct node* match;
-
-	if (queue == NULL || data == NULL) {
+	//  if the first element match or there's only 1 node
+	// if (head->data == data || queue->size == 1) {
+	// 	queue_dequeue(queue, &data);
+	// 	return 0;
+	// }
+	if (temp == NULL) {
 		return -1;
 	}
-	//  if the first element match or there's only 1 node
-	if (head->data == data || queue->size == 1) {
+	if (head->data == data) {
 		queue_dequeue(queue, &data);
 		return 0;
 	}
 	//  Loop through the queue
 	while (temp->data != data) {
+		if (temp->next == NULL) {
+			break;
+		}
 		if (temp->next->data == data) {
 			match = temp->next;
 			temp->next = match->next;
@@ -104,6 +113,7 @@ int queue_delete(queue_t queue, void *data)
 			temp = temp->next;
 		}
 	}
+	
 	//  Not found
 	if (temp == NULL) {
 		return -1;
