@@ -7,7 +7,7 @@ programs := \
 	sem_prime.x\
 	sem_simple.x\
 	sem_count.x\
-	test_preempt.x
+	queue_tester.x
 
 # User-level thread library
 UTHREADLIB := libuthread
@@ -81,4 +81,3 @@ clean: FORCE
 .PRECIOUS: %.o
 .PHONY: FORCE
 FORCE:
-
