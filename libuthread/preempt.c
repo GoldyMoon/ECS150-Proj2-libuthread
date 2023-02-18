@@ -9,7 +9,7 @@
 #include "private.h"
 #include "uthread.h"
 
-#define _XOPEN_SOURCE 700
+//#define _XOPEN_SOURCE 700
 
 /*
  * Frequency of preemption
@@ -23,12 +23,18 @@ sigset_t ss;
 
 void signal_handler(int signum) {
 	if(signum == SIGVTALRM){
+		printf("I am in handler\n");
 		uthread_yield();
+	}
+	else{
+		printf("i am in but not really\n");
+		//Error handler needed
 	}
 }
 
 void preempt_disable(void)
 {
+	//sigset_t ss;
 	sigemptyset(&ss);
 	sigaddset(&ss,SIGVTALRM);
 	sigprocmask(SIG_BLOCK, &ss, NULL);
@@ -37,6 +43,7 @@ void preempt_disable(void)
 void preempt_enable(void)
 {
 	//Add or not?
+	//sigset_t ss;
 	sigemptyset(&ss);
 	sigaddset(&ss,SIGVTALRM);
 	sigprocmask(SIG_UNBLOCK, &ss, NULL);
@@ -47,11 +54,10 @@ void preempt_start(bool preempt)
 	if (!preempt) {
 		return;
 	}
-	//int micro_seconds = 100000/HZ;
 	else{
-		sa.sa_handler = signal_handler;
+		sa.sa_handler = &signal_handler;
 		sigemptyset(&sa.sa_mask);
-		sigaddset(&sa.sa_mask, SIGVTALRM);
+		//sigaddset(&sa.sa_mask, SIGVTALRM);
 		sa.sa_flags = 0;
 		sigaction(SIGVTALRM,&sa,&normalsa);
 
@@ -61,11 +67,15 @@ void preempt_start(bool preempt)
 		new.it_value.tv_usec = 10000;
 		new.it_value.tv_sec = 0;
 	
-		int temp = setitimer(ITIMER_VIRTUAL, &new, &old);
+		setitimer(ITIMER_VIRTUAL, &new, NULL);
+		printf("timer set\n");
+		/*
+		printf("temp value is: %d\n",temp);
 		if (temp < 0) {
 			perror("setitimer fail");
 			exit(1);
 		}
+		*/
 	}
 }
 

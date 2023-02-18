@@ -56,16 +56,21 @@ int uthread_create(uthread_func_t func, void *arg)
 	struct uthread_tcb *temp_tcb = malloc(sizeof(struct uthread_tcb));
 	uthread_ctx_t *new_context = malloc(sizeof(uthread_ctx_t));
 	void* sp = uthread_ctx_alloc_stack();
+	
+	preempt_disable();
 	if (temp_tcb == NULL || new_context == NULL || sp == NULL) {
 		return -1;
 	}
 	temp_tcb->state = 1;
 	temp_tcb->sp = sp;
 	temp_tcb->context = new_context;
+
 	if (uthread_ctx_init(new_context,sp,func,arg)) {
 		return -1;
 	}
 	queue_enqueue(readyqueue, temp_tcb);
+	preempt_enable();
+
 	return 0;
 }
 
@@ -73,12 +78,10 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 {
 	readyqueue = queue_create();
 	if (preempt) {
-		//preempt_enable();
 		preempt_start(preempt);
-		printf("testing: preemptive scheduling is enabled.\n");	//start? 
+		//printf("testing: preemptive scheduling is enabled.\n");	//start? 
 	}
-	//  main thread initialization?
-	preempt_disable();
+	//  main thread initialization
 	main_thread = (struct uthread_tcb*)malloc(sizeof(struct uthread_tcb));
 	main_thread->context = (uthread_ctx_t*)malloc(sizeof(uthread_ctx_t));
 	main_thread->sp = uthread_ctx_alloc_stack();
@@ -86,15 +89,18 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 		return -1;
 	}
 	current_thread = main_thread;
-	//disable
-	if (uthread_create(func, arg)) {	//ciritical? no sig
+
+	//preempt_disable();
+	if (uthread_create(func, arg)) {	//Should be in the crearte function to block sig?
 		return -1;
 	}
-	//enable
+	//preempt_enable();
+	
 	while(1) {
 		if(!queue_length(readyqueue)) {
 			break;
 		}
+		printf("back to main now\n");
 		uthread_yield();
 	}
 	queue_destroy(readyqueue);
