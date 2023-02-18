@@ -112,6 +112,5 @@ int main(void)
 	test_iterator();
 	test_queue_simple2();
 	test_delete();
-	printf("All test done! 帅!");
 	return 0;
 }
