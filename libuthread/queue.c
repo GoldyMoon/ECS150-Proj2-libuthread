@@ -39,10 +39,10 @@ int queue_destroy(queue_t queue)
 
 int queue_enqueue(queue_t queue, void *data)
 {
-	struct node* node = (struct node*)malloc(sizeof(struct node));
 	if (data == NULL || queue == NULL) {
 		return -1;
 	}
+	struct node* node = (struct node*)malloc(sizeof(struct node));
 	if (node == NULL) {
 		return -1;
 	}
@@ -56,6 +56,7 @@ int queue_enqueue(queue_t queue, void *data)
 		queue->tail->next = node;
 		queue->tail = node;
 	}
+	// free(node);
 	return 0;
 }
 
@@ -68,10 +69,10 @@ int queue_dequeue(queue_t queue, void **data)
 	queue->size--;
 	*data = queue->head->data;
 	queue->head = queue->head->next;
+	free(temp);
 	if (queue->size == 0) {
 		queue->tail = NULL;
 	}
-	free(temp);
 	return 0;
 }
 
