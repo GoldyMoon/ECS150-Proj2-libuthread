@@ -30,25 +30,34 @@ void uthread_yield(void)
 {
 	queue_enqueue(readyqueue, current_thread);
 	struct uthread_tcb *next = malloc(sizeof(struct uthread_tcb));
-	struct uthread_tcb *prev = malloc(sizeof(struct uthread_tcb));
+	struct uthread_tcb *prev;
 	queue_dequeue(readyqueue, (void**)&next);
 	prev = current_thread;
 	current_thread = next;
 	current_thread->state = 0;
 	uthread_ctx_switch(prev->context,next->context);
+	uthread_ctx_destroy_stack(next->sp);
+	uthread_ctx_destroy_stack(prev->sp);
+	// uthread_ctx_destroy_stack(current_thread->sp);
+	free(next);
+	free(prev);
+	// free(current_thread);
 }
 
 void uthread_exit(void)
 {	
 	struct uthread_tcb *next = malloc(sizeof(struct uthread_tcb));
-	struct uthread_tcb *prev = malloc(sizeof(struct uthread_tcb));
+	struct uthread_tcb *prev;
 	queue_dequeue(readyqueue, (void**)&next);
 	prev = current_thread;
 	current_thread = next;
 	current_thread->state = 0;
 	uthread_ctx_switch(prev->context,next->context);
 	uthread_ctx_destroy_stack(prev->sp);
+	uthread_ctx_destroy_stack(next->sp);
+	// uthread_ctx_destroy_stack(current_thread->sp);
 	free(prev);
+	free(next);
 }
 
 int uthread_create(uthread_func_t func, void *arg)
@@ -70,7 +79,6 @@ int uthread_create(uthread_func_t func, void *arg)
 	}
 	queue_enqueue(readyqueue, temp_tcb);
 	preempt_enable();
-
 	return 0;
 }
 
@@ -104,8 +112,10 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 		uthread_yield();
 	}
 	queue_destroy(readyqueue);
+	// free(main_thread);
 	//disable
 	preempt_stop();
+	// uthread_ctx_destroy_stack(main_thread->sp);
 	return 0;
 }
 
