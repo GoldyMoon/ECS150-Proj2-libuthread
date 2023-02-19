@@ -19,6 +19,7 @@ struct uthread_tcb {
 queue_t readyqueue;
 struct uthread_tcb *current_thread;
 struct uthread_tcb *main_thread;
+struct uthread_tcb *next;
 
 struct uthread_tcb *uthread_current(void)
 {
@@ -28,35 +29,26 @@ struct uthread_tcb *uthread_current(void)
 void uthread_yield(void)
 {
 	queue_enqueue(readyqueue, current_thread);
-	struct uthread_tcb *next = malloc(sizeof(struct uthread_tcb));
 	struct uthread_tcb *prev;
 	queue_dequeue(readyqueue, (void**)&next);
 	prev = current_thread;
 	current_thread = next;
 	current_thread->state = 0;
 	uthread_ctx_switch(prev->context,next->context);
-	//uthread_ctx_destroy_stack(next->sp);
-	//uthread_ctx_destroy_stack(prev->sp);
-	// uthread_ctx_destroy_stack(current_thread->sp);
-	//free(next);
-	//free(prev);
-	// free(current_thread);
 }
 
 void uthread_exit(void)
 {	
-	struct uthread_tcb *next = malloc(sizeof(struct uthread_tcb));
 	struct uthread_tcb *prev;
 	queue_dequeue(readyqueue, (void**)&next);
 	prev = current_thread;
 	current_thread = next;
 	current_thread->state = 0;
+	uthread_ctx_destroy_stack(prev->sp);
+	prev -> state = 0;
+	free(prev->context);
+	free(prev);
 	uthread_ctx_switch(prev->context,next->context);
-	//uthread_ctx_destroy_stack(prev->sp);
-	//uthread_ctx_destroy_stack(next->sp);
-	// uthread_ctx_destroy_stack(current_thread->sp);
-	//free(prev);
-	//free(next);
 }
 
 int uthread_create(uthread_func_t func, void *arg)
@@ -114,15 +106,13 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 	for(int i = 0; i < queue_length(readyqueue); i++){
 		readyqueue[i];
 	}
-	*/
-	struct uthread_tcb *node = malloc(sizeof(struct uthread_tcb));
-	while(queue_dequeue(readyqueue, (void**)&node) == 0) {
-      uthread_ctx_destroy_stack(node->sp);
-      free(node->context);
-      free(node);
-  }
-	
+	*/	
 
+  uthread_ctx_destroy_stack(current_thread->sp);
+	current_thread -> state = 0;
+  free(current_thread->context);
+  free(current_thread);
+	
 	queue_destroy(readyqueue);
 	// free(main_thread);
 	preempt_stop();
