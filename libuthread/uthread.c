@@ -107,6 +107,22 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 		//printf("back to main now\n");
 		uthread_yield();
 	}
+
+	// give it as a fucntion
+
+	/* help me here 
+	for(int i = 0; i < queue_length(readyqueue); i++){
+		readyqueue[i];
+	}
+	*/
+	struct uthread_tcb *node = malloc(sizeof(struct uthread_tcb));
+	while(queue_dequeue(readyqueue, (void**)&node) == 0) {
+      uthread_ctx_destroy_stack(node->sp);
+      free(node->context);
+      free(node);
+  }
+	
+
 	queue_destroy(readyqueue);
 	// free(main_thread);
 	preempt_stop();
