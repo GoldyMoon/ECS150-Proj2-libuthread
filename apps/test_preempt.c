@@ -23,9 +23,9 @@ void thread2(void *arg)
 void thread1(void *arg)
 {
 	(void)arg;
-  printf("thread1 entered\n");
+  	printf("thread1 entered\n");
 	uthread_create(thread2, NULL);
-  printf("thread1 continue\n");
+  	printf("thread1 continue\n");
 	uthread_yield();
 	printf("thread1 reenterd\n");
 }
