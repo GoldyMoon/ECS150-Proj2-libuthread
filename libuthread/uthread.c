@@ -108,12 +108,11 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 		if(!queue_length(readyqueue)) {
 			break;
 		}
-		printf("back to main now\n");
+		//printf("back to main now\n");
 		uthread_yield();
 	}
 	queue_destroy(readyqueue);
 	// free(main_thread);
-	//disable
 	preempt_stop();
 	// uthread_ctx_destroy_stack(main_thread->sp);
 	return 0;

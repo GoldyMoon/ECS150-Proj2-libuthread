@@ -55,6 +55,6 @@ int sem_up(sem_t sem)	//Lack error handler
         queue_dequeue(sem->waiting_queue, (void**)&next_thread);
         uthread_unblock(next_thread);
     }
-		preempt_enable();
+	preempt_enable();
 	return 0;
 }

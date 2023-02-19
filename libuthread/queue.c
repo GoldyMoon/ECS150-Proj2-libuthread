@@ -39,10 +39,10 @@ int queue_destroy(queue_t queue)
 
 int queue_enqueue(queue_t queue, void *data)
 {
+	struct node* node = (struct node*)malloc(sizeof(struct node));
 	if (data == NULL || queue == NULL) {
 		return -1;
 	}
-	struct node* node = (struct node*)malloc(sizeof(struct node));
 	if (node == NULL) {
 		return -1;
 	}
@@ -56,7 +56,6 @@ int queue_enqueue(queue_t queue, void *data)
 		queue->tail->next = node;
 		queue->tail = node;
 	}
-	// free(node);
 	return 0;
 }
 
@@ -69,39 +68,30 @@ int queue_dequeue(queue_t queue, void **data)
 	queue->size--;
 	*data = queue->head->data;
 	queue->head = queue->head->next;
-	free(temp);
 	if (queue->size == 0) {
 		queue->tail = NULL;
 	}
+	free(temp);
 	return 0;
 }
 
 int queue_delete(queue_t queue, void *data)
 {
-	if (queue == NULL || data == NULL) {
-		return -1;
-	}
 	struct node* head = queue->head;
 	struct node* tail = queue->tail;
 	struct node* temp = head;
 	struct node* match;
-	//  if the first element match or there's only 1 node
-	// if (head->data == data || queue->size == 1) {
-	// 	queue_dequeue(queue, &data);
-	// 	return 0;
-	// }
-	if (temp == NULL) {
+
+	if (queue == NULL || data == NULL) {
 		return -1;
 	}
-	if (head->data == data) {
+	//  if the first element match or there's only 1 node
+	if (head->data == data || queue->size == 1) {
 		queue_dequeue(queue, &data);
 		return 0;
 	}
 	//  Loop through the queue
 	while (temp->data != data) {
-		if (temp->next == NULL) {
-			break;
-		}
 		if (temp->next->data == data) {
 			match = temp->next;
 			temp->next = match->next;
@@ -114,7 +104,6 @@ int queue_delete(queue_t queue, void *data)
 			temp = temp->next;
 		}
 	}
-	
 	//  Not found
 	if (temp == NULL) {
 		return -1;
@@ -144,3 +133,4 @@ int queue_length(queue_t queue)
 {
 	return queue->size;
 }
+

@@ -23,11 +23,11 @@ sigset_t ss;
 
 void signal_handler(int signum) {
 	if(signum == SIGVTALRM){
-		printf("I am in handler\n");
+		//printf("I am in handler\n");
 		uthread_yield();
 	}
 	else{
-		printf("i am in but not really\n");
+		//printf("i am in but not really\n");
 		//Error handler needed
 	}
 }
@@ -68,7 +68,7 @@ void preempt_start(bool preempt)
 		new.it_value.tv_sec = 0;
 	
 		setitimer(ITIMER_VIRTUAL, &new, NULL);
-		printf("timer set\n");
+		//printf("timer set\n");
 		/*
 		printf("temp value is: %d\n",temp);
 		if (temp < 0) {
