@@ -18,7 +18,6 @@ struct uthread_tcb {
 
 queue_t readyqueue;
 struct uthread_tcb *current_thread;
-//struct uthread_tcb *next_thread;
 struct uthread_tcb *main_thread;
 
 struct uthread_tcb *uthread_current(void)
@@ -36,11 +35,11 @@ void uthread_yield(void)
 	current_thread = next;
 	current_thread->state = 0;
 	uthread_ctx_switch(prev->context,next->context);
-	uthread_ctx_destroy_stack(next->sp);
-	uthread_ctx_destroy_stack(prev->sp);
+	//uthread_ctx_destroy_stack(next->sp);
+	//uthread_ctx_destroy_stack(prev->sp);
 	// uthread_ctx_destroy_stack(current_thread->sp);
-	free(next);
-	free(prev);
+	//free(next);
+	//free(prev);
 	// free(current_thread);
 }
 
@@ -53,11 +52,11 @@ void uthread_exit(void)
 	current_thread = next;
 	current_thread->state = 0;
 	uthread_ctx_switch(prev->context,next->context);
-	uthread_ctx_destroy_stack(prev->sp);
-	uthread_ctx_destroy_stack(next->sp);
+	//uthread_ctx_destroy_stack(prev->sp);
+	//uthread_ctx_destroy_stack(next->sp);
 	// uthread_ctx_destroy_stack(current_thread->sp);
-	free(prev);
-	free(next);
+	//free(prev);
+	//free(next);
 }
 
 int uthread_create(uthread_func_t func, void *arg)
@@ -87,7 +86,6 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 	readyqueue = queue_create();
 	if (preempt) {
 		preempt_start(preempt);
-		//printf("testing: preemptive scheduling is enabled.\n");	//start? 
 	}
 	//  main thread initialization
 	main_thread = (struct uthread_tcb*)malloc(sizeof(struct uthread_tcb));
@@ -98,11 +96,9 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 	}
 	current_thread = main_thread;
 
-	//preempt_disable();
 	if (uthread_create(func, arg)) {	//Should be in the crearte function to block sig?
 		return -1;
 	}
-	//preempt_enable();
 	
 	while(1) {
 		if(!queue_length(readyqueue)) {
