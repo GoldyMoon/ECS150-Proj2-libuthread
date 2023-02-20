@@ -88,39 +88,26 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 	}
 	current_thread = main_thread;
 
-	if (uthread_create(func, arg)) {	//Should be in the crearte function to block sig?
+	if (uthread_create(func, arg)) {	
 		return -1;
 	}
 	
 	while(1) {
-		if(!queue_length(readyqueue)) {
+		if (!queue_length(readyqueue)) {
 			break;
 		}
-		//printf("back to main now\n");
 		uthread_yield();
 	}
 
-	// give it as a fucntion
-
-	/* help me here 
-	for(int i = 0; i < queue_length(readyqueue); i++){
-		readyqueue[i];
-	}
-	*/	
-
-  uthread_ctx_destroy_stack(current_thread->sp);
+  	uthread_ctx_destroy_stack(current_thread->sp);
 	current_thread -> state = 0;
-  free(current_thread->context);
-  free(current_thread);
-	
+  	free(current_thread->context);
+  	free(current_thread);
 	queue_destroy(readyqueue);
-	// free(main_thread);
 	preempt_stop();
-	// uthread_ctx_destroy_stack(main_thread->sp);
 	return 0;
 }
 
-//
 void uthread_block(void)
 {
 	//struct uthread_tcb *temp = uthread_current();
@@ -134,10 +121,8 @@ void uthread_block(void)
 	//switch between the fisrt available and the current block thread and put the prev thread(blocked) into the waiting queue in sem.c
 }
 
-//
 void uthread_unblock(struct uthread_tcb *uthread)
 {
-	//
 	uthread->state = 1; //ready state
 	queue_enqueue(readyqueue,uthread); //Put the unblocked thread into the ready queue
 }
