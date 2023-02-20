@@ -21,30 +21,30 @@ sem_t sem_create(size_t count)
 	return temp;
 }
 
-int sem_destroy(sem_t sem)	// Lack error handler 
+int sem_destroy(sem_t sem)
 {
 	queue_destroy(sem->waiting_queue);
 	free(sem);
 	return 0;
 }
 
-int sem_down(sem_t sem)	//Lack error handler
+int sem_down(sem_t sem)
 {
 	
 	preempt_disable();
 	if (sem->count > 0) {
-    sem->count --;
-  }else {
-    queue_enqueue(sem->waiting_queue, uthread_current());
-    uthread_block(); //protect it here
-  }
+    	sem->count --;
+  	} else {
+		queue_enqueue(sem->waiting_queue, uthread_current());
+		uthread_block(); //protect it here
+ 	}
 	//enable
 	preempt_enable();
 	return 0;
 
 }
 
-int sem_up(sem_t sem)	//Lack error handler
+int sem_up(sem_t sem)
 {
 	preempt_disable();
 	if (queue_length(sem->waiting_queue) == 0) {
