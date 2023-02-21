@@ -18,7 +18,6 @@ The developing process strickly follows the 4 phases provided by the syllabus.
 semaphore file to prevent race condition. Make file updated, test file added
 to *app* directory
  
-
 ## Queue
 The Queue part is the basic implementation of several queue API. The core design
 here is the design and use of the data struct, which is node, in our code. Also
