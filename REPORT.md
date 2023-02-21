@@ -37,7 +37,23 @@ error of allocating any space, we also set bunch of error testing in our code,
 the way we achieve that is to detect if the input is equal to NULL, and check if
 the memory is actually allocated by checking if the pointer is equal to NULL.
 
-## Queue test file -- Ni lai xie
+## Queue test file
+The first two tests are from the example file, which only help us test the basic
+function of our implementation. Based on that consideration, we further add
+several tests. First, we add the iterator tests from the instruction to test if
+our iterator API works. In the function, it keeps iterating the enqueue function
+to add node to a queue until all the elements in the lists are inserted. Since
+the iterator tests only test iterator and enqueue, we then add another testing
+function called simple2, which is another simple test but test more complicated
+case that may happen when using enqueue, dequeue, or delete. We add the case of
+input error, like trying to insert a NULL to the queue, or delete something from
+the queue and add the value to a null pointer. Through the simple2 test, it can
+make sure that our basic function is working and functional. Besides, we also
+add a saperate test funciton to test the delete function, since we want to
+figure out if there's any possible memory leak if we only call delete and no
+dequeue. Since in our implementation, we only free memory space in dequeue or
+delete, so the test that only test one of them can help us find out which
+function may have possible memory leak.
 
 ## Uthread
 Uthread file is implemented by first create a data structure to contain all the
