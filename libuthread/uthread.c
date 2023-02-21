@@ -10,16 +10,16 @@
 #include "uthread.h"
 #include "queue.h"
 
+queue_t readyqueue;
+struct uthread_tcb *current_thread;
+struct uthread_tcb *main_thread;
+struct uthread_tcb *next;
+
 struct uthread_tcb {
 	void *sp;	//  stack pointer
 	int state;	//  running(0), ready(1) ,block(2), or exited(3)
 	uthread_ctx_t *context;//  set of registers
 };
-
-queue_t readyqueue;
-struct uthread_tcb *current_thread;
-struct uthread_tcb *main_thread;
-struct uthread_tcb *next;
 
 struct uthread_tcb *uthread_current(void)
 {
