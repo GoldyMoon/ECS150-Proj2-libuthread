@@ -9,8 +9,6 @@
 #include "private.h"
 #include "uthread.h"
 
-//#define _XOPEN_SOURCE 700
-
 /*
  * Frequency of preemption
  * 100Hz is 100 times per second
@@ -50,9 +48,9 @@ void preempt_start(bool preempt)
 		sigemptyset(&sa.sa_mask);
 		sa.sa_flags = 0;
 		sigaction(SIGVTALRM,&sa,&normalsa);
-		new.it_interval.tv_usec = 10000;
+		new.it_interval.tv_usec = HZ * 100;
 		new.it_interval.tv_sec = 0;
-		new.it_value.tv_usec = 10000;
+		new.it_value.tv_usec = HZ * 100;
 		new.it_value.tv_sec = 0;
 		setitimer(ITIMER_VIRTUAL, &new, NULL);
 	}
