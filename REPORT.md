@@ -1,7 +1,7 @@
 # Project Report -- simple shell implementation
 ## Jinduo Guo 918330642
 ## Pengcheng Cao 916835301
-##  20th, Feb 2023
+##  22th, Feb 2023
 
 ## Summary
 This project create a library which implemented the thread function with supported 
@@ -19,7 +19,23 @@ semaphore file to prevent race condition. Make file updated, test file added
 to *app* directory
  
 
-## Queue -- Ni lai xie
+## Queue
+The Queue part is the basic implementation of several queue API. The core design
+here is the design and use of the data struct, which is node, in our code. Also
+the design of our struct queue is also important, we use two pointer to
+saperately represent the current head and current tail, and the size of the
+whole queue is also included in this struct. After the building of the data
+struct that we want to use, the next step we did is implement those useful API.
+The core idea for these implementation is first to insert a node(enqueue()) to
+the end of the queue, remove one node from the beginning(dequeue()), or
+search&delete(delete()). The core design part here also include the part of
+memory leak control. Instead of writing a saperate part to free the memory space
+we allocated, we use the method of clear one node when we don't need it anymore
+in our delete and dequeue API. The way we do that is to avoid possible double
+free problem. Last but not least, to avoid any error caused by input error or
+error of allocating any space, we also set bunch of error testing in our code,
+the way we achieve that is to detect if the input is equal to NULL, and check if
+the memory is actually allocated by checking if the pointer is equal to NULL.
 
 ## Queue test file -- Ni lai xie
 
