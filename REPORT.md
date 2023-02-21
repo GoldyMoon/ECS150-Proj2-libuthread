@@ -80,7 +80,15 @@ allocate space and use the *uthread_ctx_init* and *uthread_ctx_alloc_stack* to
 initalize the new thread. **uthread_block** and **uthread_unblock** will be set
 in phase 3 and are igonred here. 
 
-## Semaphore -- ni lai xie 
+## Semaphore
+The main work for this section is the implementation of struct, and two sem
+function(sem_up() and sem_down()), which is for the case of the common resources
+accessed by multiple thread. For here, the sem_up function would keep incresing
+the number of resources, until there is any thread appear in the waiting queue,
+if so, the sem_up function would dequeue() the waiting queue and unblock the
+data. And for sem_down(), if the count(or resources) is greater than 0, it will
+subtract resources and send that to the thread, and in other cases, it will put
+the thread into the waiting queue and call block().
 
 
 ## Preempt
