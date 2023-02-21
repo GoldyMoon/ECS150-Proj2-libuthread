@@ -1,6 +1,6 @@
 # Project Report -- simple shell implementation
 ## Jinduo Guo 918330642
-## Mingzi + ID
+## Pengcheng Cao 916835301
 ##  20th, Feb 2023
 
 ## Summary
